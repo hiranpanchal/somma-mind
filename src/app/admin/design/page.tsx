@@ -192,13 +192,13 @@ function CardImageUpload({
   cardNum: number; values: Record<string, string>; onChange: (key: string, val: string) => void;
 }) {
   const [uploading, setUploading] = useState(false);
+  const [dragging, setDragging] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const imgKey = `method_card_${cardNum}_image`;
   const currentUrl = values[imgKey] ?? "";
 
-  async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  async function uploadFile(file: File) {
+    if (!file.type.startsWith("image/")) return;
     setUploading(true);
     const fd = new FormData();
     fd.append("file", file);
@@ -209,12 +209,47 @@ function CardImageUpload({
     if (fileRef.current) fileRef.current.value = "";
   }
 
+  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) uploadFile(file);
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault();
+    setDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) uploadFile(file);
+  }
+
+  function handleDragOver(e: React.DragEvent) {
+    e.preventDefault();
+    setDragging(true);
+  }
+
+  function handleDragLeave(e: React.DragEvent) {
+    // Only clear drag state if leaving the drop zone entirely
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setDragging(false);
+    }
+  }
+
   return (
     <div>
       <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wide mb-1.5">Card Image</label>
       {currentUrl ? (
-        <div className="relative rounded-xl overflow-hidden border border-stone-200 bg-stone-50">
-          <img src={currentUrl} alt="" className="w-full h-40 object-cover" />
+        <div
+          className={`relative rounded-xl overflow-hidden border-2 bg-stone-50 transition-all ${dragging ? "border-[#b76d79] ring-2 ring-[#b76d79]/20 scale-[1.01]" : "border-stone-200"}`}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+        >
+          <img src={currentUrl} alt="" className={`w-full h-40 object-cover transition-opacity ${dragging ? "opacity-40" : "opacity-100"}`} />
+          {dragging && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/60 backdrop-blur-sm pointer-events-none">
+              <Upload size={24} className="text-[#b76d79] mb-1" />
+              <span className="text-sm font-medium text-[#b76d79]">Drop to replace</span>
+            </div>
+          )}
           <button
             onClick={() => onChange(imgKey, "")}
             className="absolute top-2 right-2 bg-white/90 hover:bg-white text-stone-600 hover:text-red-500 p-1.5 rounded-lg shadow transition-colors"
@@ -225,16 +260,43 @@ function CardImageUpload({
             <span className="text-white text-xs truncate">{currentUrl.split("/").pop()}</span>
             <label className="cursor-pointer text-white/80 hover:text-white text-xs flex items-center gap-1">
               <Upload size={11} /> Replace
-              <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleUpload} disabled={uploading} />
+              <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleInputChange} disabled={uploading} />
             </label>
           </div>
         </div>
       ) : (
-        <label className={`flex flex-col items-center justify-center h-32 rounded-xl border-2 border-dashed border-stone-200 bg-stone-50 cursor-pointer hover:border-[#b76d79] hover:bg-[#fdf0f2] transition-all ${uploading ? "opacity-60" : ""}`}>
-          <Upload size={20} className="text-stone-400 mb-2" />
-          <span className="text-xs text-stone-500">{uploading ? "Uploading…" : "Click to upload image"}</span>
-          <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleUpload} disabled={uploading} />
-        </label>
+        <div
+          className={`relative flex flex-col items-center justify-center h-36 rounded-xl border-2 border-dashed transition-all cursor-pointer
+            ${dragging
+              ? "border-[#b76d79] bg-[#fdf0f2] scale-[1.01] ring-2 ring-[#b76d79]/20"
+              : uploading
+              ? "border-stone-200 bg-stone-50 opacity-60"
+              : "border-stone-200 bg-stone-50 hover:border-[#b76d79] hover:bg-[#fdf0f2]"
+            }`}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onClick={() => fileRef.current?.click()}
+        >
+          <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleInputChange} disabled={uploading} />
+          {uploading ? (
+            <>
+              <div className="w-6 h-6 border-2 border-[#b76d79] border-t-transparent rounded-full animate-spin mb-2" />
+              <span className="text-xs text-stone-500">Uploading…</span>
+            </>
+          ) : dragging ? (
+            <>
+              <Upload size={24} className="text-[#b76d79] mb-2" />
+              <span className="text-sm font-medium text-[#b76d79]">Drop image here</span>
+            </>
+          ) : (
+            <>
+              <Upload size={20} className="text-stone-400 mb-2" />
+              <span className="text-sm text-stone-500">Drop image here</span>
+              <span className="text-xs text-stone-400 mt-0.5">or click to browse</span>
+            </>
+          )}
+        </div>
       )}
     </div>
   );
