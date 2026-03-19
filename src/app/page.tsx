@@ -109,33 +109,24 @@ export default async function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[
                 {
-                  icon: Brain,
-                  color: "bg-[#f5e4e7] text-[#b76d79]",
                   title: "Hypnotherapy",
                   desc: "Access the subconscious mind to dissolve limiting beliefs and rewrite the stories that keep you stuck — effortlessly.",
                 },
                 {
-                  icon: Sparkles,
-                  color: "bg-[#eaebdf] text-[#85896c]",
                   title: "Brainspotting",
                   desc: "Locate and process trauma stored in the body using targeted eye positions, releasing what talk therapy often cannot reach.",
                 },
                 {
-                  icon: Headphones,
-                  color: "bg-[#eaebdf] text-[#85896c]",
                   title: "Somatic Healing",
                   desc: "Reconnect with your body's innate wisdom to release tension, integrate experiences, and restore natural regulation.",
                 },
-              ].map(({ icon: Icon, color, title, desc }) => (
+              ].map(({ title, desc }) => (
                 <div
                   key={title}
                   className="bg-[#f2f2f2] rounded-2xl p-8 border border-stone-100 hover:border-[#e8b4bc] hover:shadow-md transition-all duration-200"
                 >
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-5 ${color}`}>
-                    <Icon size={22} />
-                  </div>
                   <h3
-                    className="text-xl font-semibold text-[#1c1917] mb-3"
+                    className="text-3xl font-bold text-[#1c1917] mb-3"
                     style={{ fontFamily: "var(--font-playfair)" }}
                   >
                     {title}
