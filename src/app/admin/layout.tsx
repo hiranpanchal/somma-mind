@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { BookOpen, LayoutDashboard, Users, LogOut, CreditCard, Star } from "lucide-react";
+import { BookOpen, LayoutDashboard, Users, LogOut, CreditCard, Star, Palette } from "lucide-react";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -33,6 +33,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             { href: "/admin/users", label: "Students", icon: Users },
             { href: "/admin/reviews", label: "Reviews", icon: Star },
             { href: "/admin/stripe", label: "Payments", icon: CreditCard },
+            { href: "/admin/design", label: "Design", icon: Palette },
           ].map(({ href, label, icon: Icon }) => (
             <Link
               key={href}

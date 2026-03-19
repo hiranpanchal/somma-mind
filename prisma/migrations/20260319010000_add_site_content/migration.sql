@@ -1,0 +1,6 @@
+-- CreateTable
+CREATE TABLE IF NOT EXISTS "SiteContent" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "value" TEXT NOT NULL DEFAULT '',
+    "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
