@@ -1,6 +1,9 @@
 import { prisma } from "@/lib/db";
 import ManualEnrollButton from "@/components/admin/ManualEnrollButton";
 import { Users } from "lucide-react";
+import Link from "next/link";
+
+export const dynamic = "force-dynamic";
 
 export default async function AdminUsersPage() {
   const users = await prisma.user.findMany({
@@ -48,10 +51,12 @@ export default async function AdminUsersPage() {
             </thead>
             <tbody>
               {users.map((user) => (
-                <tr key={user.id} className="border-b border-stone-50 last:border-0 hover:bg-stone-50">
+                <tr key={user.id} className="border-b border-stone-50 last:border-0 hover:bg-stone-50 transition-colors">
                   <td className="px-5 py-4">
-                    <p className="font-medium text-[#1c1917]">{user.name}</p>
-                    <p className="text-xs text-stone-400">{user.email}</p>
+                    <Link href={`/admin/users/${user.id}`} className="group">
+                      <p className="font-medium text-[#1c1917] group-hover:text-[#b76d79] transition-colors">{user.name}</p>
+                      <p className="text-xs text-stone-400">{user.email}</p>
+                    </Link>
                   </td>
                   <td className="px-5 py-4">
                     <div className="flex flex-wrap gap-1">
@@ -59,7 +64,7 @@ export default async function AdminUsersPage() {
                         <span className="text-stone-400 text-xs">None</span>
                       ) : (
                         user.enrollments.map((e) => (
-                          <span key={e.id} className="bg-[#f5e4e7] text-violet-700 text-xs px-2 py-0.5 rounded-full">
+                          <span key={e.id} className="bg-[#f5e4e7] text-[#9a5864] text-xs px-2 py-0.5 rounded-full">
                             {e.course.title}
                           </span>
                         ))
@@ -67,7 +72,7 @@ export default async function AdminUsersPage() {
                     </div>
                   </td>
                   <td className="px-5 py-4 text-stone-500">{user._count.progress}</td>
-                  <td className="px-5 py-4 text-stone-400">{new Date(user.createdAt).toLocaleDateString()}</td>
+                  <td className="px-5 py-4 text-stone-400">{new Date(user.createdAt).toLocaleDateString("en-GB")}</td>
                   <td className="px-5 py-4">
                     <ManualEnrollButton
                       userId={user.id}
