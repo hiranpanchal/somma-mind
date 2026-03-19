@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Save, Upload, Copy, Check, Trash2, Image as ImageIcon, Palette, Type, ExternalLink } from "lucide-react";
+import { Save, Upload, Copy, Check, Image as ImageIcon, Palette, Type, ExternalLink, X } from "lucide-react";
 
-// ─── defaults ────────────────────────────────────────────────────────────────
 const DEFAULTS: Record<string, string> = {
   hero_title_before: "Transform from",
   hero_title_highlight: "the inside",
@@ -17,76 +16,100 @@ const DEFAULTS: Record<string, string> = {
   method_title: "The Somaa Method",
   method_subtitle: "Three powerful healing modalities woven together into one transformative journey.",
   method_card_1_title: "Hypnotherapy",
-  method_card_1_desc:
-    "Access the subconscious mind to dissolve limiting beliefs and rewrite the stories that keep you stuck — effortlessly.",
+  method_card_1_desc: "Access the subconscious mind to dissolve limiting beliefs and rewrite the stories that keep you stuck — effortlessly.",
+  method_card_1_image: "",
   method_card_2_title: "Brainspotting",
-  method_card_2_desc:
-    "Locate and process trauma stored in the body using targeted eye positions, releasing what talk therapy often cannot reach.",
+  method_card_2_desc: "Locate and process trauma stored in the body using targeted eye positions, releasing what talk therapy often cannot reach.",
+  method_card_2_image: "",
   method_card_3_title: "Somatic Healing",
-  method_card_3_desc:
-    "Reconnect with your body's innate wisdom to release tension, integrate experiences, and restore natural regulation.",
+  method_card_3_desc: "Reconnect with your body's innate wisdom to release tension, integrate experiences, and restore natural regulation.",
+  method_card_3_image: "",
 };
 
-type Image = { name: string; url: string; size: number; createdAt: string };
+type ImageFile = { name: string; url: string; size: number; createdAt: string };
 
-// ─── Field component ─────────────────────────────────────────────────────────
 function Field({
-  label,
-  fieldKey,
-  values,
-  onChange,
-  multiline = false,
-  placeholder,
+  label, fieldKey, values, onChange, multiline = false, placeholder,
 }: {
-  label: string;
-  fieldKey: string;
-  values: Record<string, string>;
-  onChange: (key: string, val: string) => void;
-  multiline?: boolean;
-  placeholder?: string;
+  label: string; fieldKey: string; values: Record<string, string>;
+  onChange: (key: string, val: string) => void; multiline?: boolean; placeholder?: string;
 }) {
   const val = values[fieldKey] ?? DEFAULTS[fieldKey] ?? "";
   return (
     <div>
-      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wide mb-1.5">
-        {label}
-      </label>
+      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wide mb-1.5">{label}</label>
       {multiline ? (
-        <textarea
-          value={val}
-          onChange={(e) => onChange(fieldKey, e.target.value)}
-          rows={3}
+        <textarea value={val} onChange={(e) => onChange(fieldKey, e.target.value)} rows={3}
           className="w-full px-3 py-2.5 rounded-xl border border-stone-200 bg-stone-50 text-sm text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#b76d79] focus:border-transparent resize-none"
-          placeholder={placeholder ?? DEFAULTS[fieldKey]}
-        />
+          placeholder={placeholder ?? DEFAULTS[fieldKey]} />
       ) : (
-        <input
-          type="text"
-          value={val}
-          onChange={(e) => onChange(fieldKey, e.target.value)}
+        <input type="text" value={val} onChange={(e) => onChange(fieldKey, e.target.value)}
           className="w-full px-3 py-2.5 rounded-xl border border-stone-200 bg-stone-50 text-sm text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#b76d79] focus:border-transparent"
-          placeholder={placeholder ?? DEFAULTS[fieldKey]}
-        />
+          placeholder={placeholder ?? DEFAULTS[fieldKey]} />
       )}
     </div>
   );
 }
 
-// ─── Section wrapper ─────────────────────────────────────────────────────────
-function Section({
-  title,
-  icon: Icon,
-  children,
-  onSave,
-  saving,
-  saved,
+function CardImageUpload({
+  cardNum, values, onChange,
 }: {
-  title: string;
-  icon: React.ElementType;
-  children: React.ReactNode;
-  onSave: () => void;
-  saving: boolean;
-  saved: boolean;
+  cardNum: number; values: Record<string, string>; onChange: (key: string, val: string) => void;
+}) {
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const imgKey = `method_card_${cardNum}_image`;
+  const currentUrl = values[imgKey] ?? "";
+
+  async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    const fd = new FormData();
+    fd.append("file", file);
+    const res = await fetch("/api/admin/upload-image", { method: "POST", body: fd });
+    const { url } = await res.json();
+    if (url) onChange(imgKey, url);
+    setUploading(false);
+    if (fileRef.current) fileRef.current.value = "";
+  }
+
+  return (
+    <div>
+      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wide mb-1.5">Card Image</label>
+      {currentUrl ? (
+        <div className="relative rounded-xl overflow-hidden border border-stone-200 bg-stone-50">
+          <img src={currentUrl} alt="" className="w-full h-40 object-cover" />
+          <button
+            onClick={() => onChange(imgKey, "")}
+            className="absolute top-2 right-2 bg-white/90 hover:bg-white text-stone-600 hover:text-red-500 p-1.5 rounded-lg shadow transition-colors"
+          >
+            <X size={14} />
+          </button>
+          <div className="absolute bottom-0 left-0 right-0 bg-black/40 px-3 py-1.5 flex items-center justify-between">
+            <span className="text-white text-xs truncate">{currentUrl.split("/").pop()}</span>
+            <label className="cursor-pointer text-white/80 hover:text-white text-xs flex items-center gap-1">
+              <Upload size={11} /> Replace
+              <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleUpload} disabled={uploading} />
+            </label>
+          </div>
+        </div>
+      ) : (
+        <label className={`flex flex-col items-center justify-center h-32 rounded-xl border-2 border-dashed border-stone-200 bg-stone-50 cursor-pointer hover:border-[#b76d79] hover:bg-[#fdf0f2] transition-all ${uploading ? "opacity-60" : ""}`}>
+          <Upload size={20} className="text-stone-400 mb-2" />
+          <span className="text-xs text-stone-500">{uploading ? "Uploading…" : "Click to upload image"}</span>
+          <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleUpload} disabled={uploading} />
+        </label>
+      )}
+    </div>
+  );
+}
+
+function Section({
+  title, icon: Icon, children, onSave, saving, saved,
+}: {
+  title: string; icon: React.ElementType; children: React.ReactNode;
+  onSave: () => void; saving: boolean; saved: boolean;
 }) {
   return (
     <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden">
@@ -97,15 +120,8 @@ function Section({
           </div>
           <h2 className="font-semibold text-stone-800">{title}</h2>
         </div>
-        <button
-          onClick={onSave}
-          disabled={saving}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
-            saved
-              ? "bg-green-100 text-green-700"
-              : "bg-[#b76d79] text-white hover:bg-[#9a5864]"
-          } disabled:opacity-60`}
-        >
+        <button onClick={onSave} disabled={saving}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${saved ? "bg-green-100 text-green-700" : "bg-[#b76d79] text-white hover:bg-[#9a5864]"} disabled:opacity-60`}>
           {saved ? <Check size={14} /> : <Save size={14} />}
           {saved ? "Saved!" : saving ? "Saving…" : "Save"}
         </button>
@@ -115,13 +131,12 @@ function Section({
   );
 }
 
-// ─── Main page ────────────────────────────────────────────────────────────────
 export default function DesignPage() {
   const [values, setValues] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<Record<string, boolean>>({});
   const [saved, setSaved] = useState<Record<string, boolean>>({});
-  const [images, setImages] = useState<Image[]>([]);
+  const [images, setImages] = useState<ImageFile[]>([]);
   const [uploading, setUploading] = useState(false);
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"hero" | "method" | "images">("hero");
@@ -135,9 +150,7 @@ export default function DesignPage() {
   }, []);
 
   function loadImages() {
-    fetch("/api/admin/images")
-      .then((r) => r.json())
-      .then(setImages);
+    fetch("/api/admin/images").then((r) => r.json()).then(setImages);
   }
 
   function onChange(key: string, val: string) {
@@ -148,11 +161,7 @@ export default function DesignPage() {
     setSaving((p) => ({ ...p, [sectionKey]: true }));
     const updates: Record<string, string> = {};
     for (const k of keys) updates[k] = values[k] ?? DEFAULTS[k] ?? "";
-    await fetch("/api/admin/design", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updates),
-    });
+    await fetch("/api/admin/design", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(updates) });
     setSaving((p) => ({ ...p, [sectionKey]: false }));
     setSaved((p) => ({ ...p, [sectionKey]: true }));
     setTimeout(() => setSaved((p) => ({ ...p, [sectionKey]: false })), 2500);
@@ -176,73 +185,37 @@ export default function DesignPage() {
     setTimeout(() => setCopiedUrl(null), 2000);
   }
 
-  const heroKeys = [
-    "hero_title_before", "hero_title_highlight", "hero_title_after",
-    "hero_description", "hero_cta_primary_text", "hero_cta_primary_url",
-    "hero_cta_secondary_text", "hero_cta_secondary_url",
-  ];
-  const methodKeys = [
-    "method_title", "method_subtitle",
-    "method_card_1_title", "method_card_1_desc",
-    "method_card_2_title", "method_card_2_desc",
-    "method_card_3_title", "method_card_3_desc",
-  ];
+  const heroKeys = ["hero_title_before","hero_title_highlight","hero_title_after","hero_description","hero_cta_primary_text","hero_cta_primary_url","hero_cta_secondary_text","hero_cta_secondary_url"];
+  const methodKeys = ["method_title","method_subtitle","method_card_1_title","method_card_1_desc","method_card_1_image","method_card_2_title","method_card_2_desc","method_card_2_image","method_card_3_title","method_card_3_desc","method_card_3_image"];
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-2 border-[#b76d79] border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+    return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-2 border-[#b76d79] border-t-transparent rounded-full animate-spin" /></div>;
   }
 
   return (
     <div>
-      {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-stone-900" style={{ fontFamily: "var(--font-playfair)" }}>
-            Design
-          </h1>
+          <h1 className="text-2xl font-bold text-stone-900" style={{ fontFamily: "var(--font-playfair)" }}>Design</h1>
           <p className="text-stone-500 text-sm mt-1">Edit your site content and images</p>
         </div>
-        <a
-          href="/"
-          target="_blank"
-          className="flex items-center gap-2 px-4 py-2 rounded-xl border border-stone-200 text-sm text-stone-600 hover:bg-stone-50 transition-colors"
-        >
-          <ExternalLink size={14} />
-          Preview Site
+        <a href="/" target="_blank" className="flex items-center gap-2 px-4 py-2 rounded-xl border border-stone-200 text-sm text-stone-600 hover:bg-stone-50 transition-colors">
+          <ExternalLink size={14} /> Preview Site
         </a>
       </div>
 
-      {/* Tabs */}
       <div className="flex gap-1 bg-stone-100 p-1 rounded-xl mb-6 w-fit">
         {(["hero", "method", "images"] as const).map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`px-5 py-2 rounded-lg text-sm font-medium capitalize transition-all ${
-              activeTab === tab
-                ? "bg-white text-[#b76d79] shadow-sm"
-                : "text-stone-500 hover:text-stone-700"
-            }`}
-          >
+          <button key={tab} onClick={() => setActiveTab(tab)}
+            className={`px-5 py-2 rounded-lg text-sm font-medium capitalize transition-all ${activeTab === tab ? "bg-white text-[#b76d79] shadow-sm" : "text-stone-500 hover:text-stone-700"}`}>
             {tab === "images" ? "Images" : tab === "hero" ? "Hero Section" : "Method Section"}
           </button>
         ))}
       </div>
 
       <div className="space-y-6">
-        {/* Hero Section */}
         {activeTab === "hero" && (
-          <Section
-            title="Hero Section"
-            icon={Type}
-            onSave={() => saveSection(heroKeys, "hero")}
-            saving={!!saving.hero}
-            saved={!!saved.hero}
-          >
+          <Section title="Hero Section" icon={Type} onSave={() => saveSection(heroKeys, "hero")} saving={!!saving.hero} saved={!!saved.hero}>
             <div className="bg-stone-50 rounded-xl p-4 mb-2">
               <p className="text-xs text-stone-500 mb-1 font-medium">HEADLINE PREVIEW</p>
               <p className="text-2xl font-bold" style={{ fontFamily: "var(--font-playfair)" }}>
@@ -268,15 +241,8 @@ export default function DesignPage() {
           </Section>
         )}
 
-        {/* Method Section */}
         {activeTab === "method" && (
-          <Section
-            title="The Method Section"
-            icon={Palette}
-            onSave={() => saveSection(methodKeys, "method")}
-            saving={!!saving.method}
-            saved={!!saved.method}
-          >
+          <Section title="The Method Section" icon={Palette} onSave={() => saveSection(methodKeys, "method")} saving={!!saving.method} saved={!!saved.method}>
             <div className="grid grid-cols-2 gap-4">
               <Field label="Section Title" fieldKey="method_title" values={values} onChange={onChange} />
               <Field label="Section Subtitle" fieldKey="method_subtitle" values={values} onChange={onChange} />
@@ -284,6 +250,7 @@ export default function DesignPage() {
             {([1, 2, 3] as const).map((n) => (
               <div key={n} className="border border-stone-200 rounded-xl p-4 space-y-3">
                 <p className="text-xs font-semibold text-stone-400 uppercase tracking-wide">Card {n}</p>
+                <CardImageUpload cardNum={n} values={values} onChange={onChange} />
                 <Field label="Title" fieldKey={`method_card_${n}_title`} values={values} onChange={onChange} />
                 <Field label="Description" fieldKey={`method_card_${n}_desc`} values={values} onChange={onChange} multiline />
               </div>
@@ -291,7 +258,6 @@ export default function DesignPage() {
           </Section>
         )}
 
-        {/* Images */}
         {activeTab === "images" && (
           <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden">
             <div className="flex items-center justify-between px-6 py-4 border-b border-stone-100">
@@ -301,20 +267,13 @@ export default function DesignPage() {
                 </div>
                 <div>
                   <h2 className="font-semibold text-stone-800">Image Library</h2>
-                  <p className="text-xs text-stone-400">{images.length} images — click URL to copy</p>
+                  <p className="text-xs text-stone-400">{images.length} images — click to copy URL</p>
                 </div>
               </div>
               <label className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-[#b76d79] text-white hover:bg-[#9a5864] transition-all cursor-pointer ${uploading ? "opacity-60" : ""}`}>
                 <Upload size={14} />
                 {uploading ? "Uploading…" : "Upload Image"}
-                <input
-                  ref={fileRef}
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={uploadImage}
-                  disabled={uploading}
-                />
+                <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={uploadImage} disabled={uploading} />
               </label>
             </div>
             <div className="p-6">
@@ -327,22 +286,12 @@ export default function DesignPage() {
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                   {images.map((img) => (
                     <div key={img.url} className="group relative rounded-xl overflow-hidden border border-stone-200 bg-stone-50">
-                      <img
-                        src={img.url}
-                        alt={img.name}
-                        className="w-full h-36 object-cover"
-                      />
+                      <img src={img.url} alt={img.name} className="w-full h-36 object-cover" />
                       <div className="p-2 space-y-1.5">
                         <p className="text-xs text-stone-600 truncate font-medium">{img.name}</p>
                         <p className="text-xs text-stone-400">{(img.size / 1024).toFixed(0)} KB</p>
-                        <button
-                          onClick={() => copyUrl(img.url)}
-                          className={`w-full flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                            copiedUrl === img.url
-                              ? "bg-green-100 text-green-700"
-                              : "bg-stone-100 text-stone-600 hover:bg-[#f5e4e7] hover:text-[#b76d79]"
-                          }`}
-                        >
+                        <button onClick={() => copyUrl(img.url)}
+                          className={`w-full flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-medium transition-all ${copiedUrl === img.url ? "bg-green-100 text-green-700" : "bg-stone-100 text-stone-600 hover:bg-[#f5e4e7] hover:text-[#b76d79]"}`}>
                           {copiedUrl === img.url ? <Check size={12} /> : <Copy size={12} />}
                           {copiedUrl === img.url ? "Copied!" : "Copy URL"}
                         </button>

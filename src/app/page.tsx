@@ -24,6 +24,9 @@ const CONTENT_DEFAULTS: Record<string, string> = {
   method_card_2_desc: "Locate and process trauma stored in the body using targeted eye positions, releasing what talk therapy often cannot reach.",
   method_card_3_title: "Somatic Healing",
   method_card_3_desc: "Reconnect with your body's innate wisdom to release tension, integrate experiences, and restore natural regulation.",
+  method_card_1_image: "",
+  method_card_2_image: "",
+  method_card_3_image: "",
 };
 
 async function getSiteContent() {
@@ -121,14 +124,25 @@ export default async function HomePage() {
               <p className="text-stone-600 max-w-xl mx-auto">{c("method_subtitle")}</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {([1, 2, 3] as const).map((n) => (
-                <div key={n} className="bg-[#f2f2f2] rounded-2xl p-8 border border-stone-100 hover:border-[#e8b4bc] hover:shadow-md transition-all duration-200">
-                  <h3 className="text-3xl font-bold text-[#1c1917] mb-3" style={{ fontFamily: "var(--font-playfair)" }}>
-                    {c(`method_card_${n}_title`)}
-                  </h3>
-                  <p className="text-stone-600 leading-relaxed text-sm">{c(`method_card_${n}_desc`)}</p>
-                </div>
-              ))}
+              {([1, 2, 3] as const).map((n) => {
+                const img = c(`method_card_${n}_image`);
+                return (
+                  <div key={n} className="bg-[#f2f2f2] rounded-2xl overflow-hidden border border-stone-100 hover:border-[#e8b4bc] hover:shadow-md transition-all duration-200 flex flex-col">
+                    {/* Equal-height image container — always 220px tall */}
+                    <div className="w-full h-[220px] bg-gradient-to-br from-[#f5e4e7] to-[#eaebdf] flex-shrink-0">
+                      {img ? (
+                        <img src={img} alt={c(`method_card_${n}_title`)} className="w-full h-full object-cover" />
+                      ) : null}
+                    </div>
+                    <div className="p-8 flex-1">
+                      <h3 className="text-3xl font-bold text-[#1c1917] mb-3" style={{ fontFamily: "var(--font-playfair)" }}>
+                        {c(`method_card_${n}_title`)}
+                      </h3>
+                      <p className="text-stone-600 leading-relaxed text-sm">{c(`method_card_${n}_desc`)}</p>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </section>
