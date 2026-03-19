@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
+import { getImagesDir, getImageUrl } from "@/lib/images";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp", "image/svg+xml"];
 
@@ -25,7 +26,7 @@ export async function POST(req: Request) {
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
 
-  const uploadDir = path.join(process.cwd(), "public", "images");
+  const uploadDir = getImagesDir();
   await mkdir(uploadDir, { recursive: true });
 
   const safeName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
@@ -33,5 +34,5 @@ export async function POST(req: Request) {
 
   await writeFile(filePath, buffer);
 
-  return NextResponse.json({ url: `/images/${safeName}` });
+  return NextResponse.json({ url: getImageUrl(safeName) });
 }
