@@ -62,9 +62,7 @@ export default async function HomePage() {
           </svg>
 
           <div className="relative max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 bg-[#f5e4e7] text-[#9a5864] text-xs font-semibold px-4 py-2 rounded-full mb-6 uppercase tracking-wider">
-              <Sparkles size={12} /> Heal at Your Own Pace
-            </div>
+
             <h1
               className="text-5xl md:text-7xl font-bold text-[#1c1917] mb-6 leading-tight"
               style={{ fontFamily: "var(--font-playfair)" }}
