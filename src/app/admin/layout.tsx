@@ -8,7 +8,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!session || session.user.role !== "ADMIN") redirect("/dashboard");
 
   return (
-    <div className="min-h-screen bg-[#e9d8b6] flex">
+    <div className="min-h-screen bg-[#f2f2f2] flex">
       {/* Sidebar */}
       <aside className="w-64 bg-[#1c1917] text-white flex flex-col fixed inset-y-0 left-0 z-40">
         <div className="p-6 border-b border-white/10">

@@ -49,7 +49,7 @@ export default function EnrollButton({ courseId, price, title }: Props) {
       className="w-full flex items-center justify-center gap-2 bg-[#b76d79] text-white font-semibold py-3.5 rounded-xl hover:bg-[#9a5864] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
     >
       <ShoppingCart size={16} />
-      {loading ? "Redirecting..." : `Enroll — ${price === 0 ? "Free" : `$${price}`}`}
+      {loading ? "Redirecting..." : `Enroll — ${price === 0 ? "Free" : `£${price}`}`}
     </button>
   );
 }

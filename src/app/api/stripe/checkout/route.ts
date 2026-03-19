@@ -33,7 +33,7 @@ export async function POST(req: Request) {
     line_items: [
       {
         price_data: {
-          currency: "usd",
+          currency: "gbp",
           product_data: {
             name: course.title,
             description: course.subtitle ?? undefined,

@@ -49,7 +49,7 @@ export default async function CourseDetailPage({ params }: Props) {
   return (
     <>
       <Header />
-      <main className="flex-1 bg-[#e9d8b6]">
+      <main className="flex-1 bg-[#f2f2f2]">
         {/* Hero */}
         <section className="bg-white border-b border-stone-100 py-16 px-4">
           <div className="max-w-5xl mx-auto">

@@ -45,7 +45,7 @@ export default async function CourseSyllabusPage({ params }: Props) {
   return (
     <>
       <Header />
-      <main className="flex-1 bg-[#e9d8b6] py-10 px-4">
+      <main className="flex-1 bg-[#f2f2f2] py-10 px-4">
         <div className="max-w-3xl mx-auto">
           <Link href="/dashboard" className="inline-flex items-center gap-1 text-sm text-stone-500 hover:text-[#b76d79] mb-6">
             <ChevronLeft size={14} /> Back to Dashboard

@@ -42,7 +42,7 @@ export default async function DashboardPage() {
   return (
     <>
       <Header />
-      <main className="flex-1 bg-[#e9d8b6] py-10 px-4">
+      <main className="flex-1 bg-[#f2f2f2] py-10 px-4">
         <div className="max-w-5xl mx-auto">
           {/* Greeting */}
           <div className="mb-10">

@@ -63,7 +63,7 @@ export default async function ModuleViewerPage({ params }: Props) {
   return (
     <>
       <Header />
-      <div className="flex-1 min-h-screen bg-[#e9d8b6]">
+      <div className="flex-1 min-h-screen bg-[#f2f2f2]">
         <div className="max-w-5xl mx-auto px-4 py-8">
           {/* Breadcrumb */}
           <div className="flex items-center gap-2 text-sm text-stone-500 mb-6">

@@ -23,7 +23,7 @@ export default async function HomePage() {
       <main className="flex-1">
         {/* Hero */}
         <section className="relative overflow-hidden py-24 px-4"
-          style={{ background: "linear-gradient(135deg, #e9d8b6 0%, #d6cec4 50%, #c9a698 100%)" }}
+          style={{ background: "linear-gradient(135deg, #f2f2f2 0%, #d6cec4 50%, #c9a698 100%)" }}
         >
           {/* Left botanical */}
           <svg className="absolute left-0 bottom-0 w-64 h-80 opacity-30 hidden md:block" viewBox="0 0 260 320" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -131,7 +131,7 @@ export default async function HomePage() {
               ].map(({ icon: Icon, color, title, desc }) => (
                 <div
                   key={title}
-                  className="bg-[#e9d8b6] rounded-2xl p-8 border border-stone-100 hover:border-[#e8b4bc] hover:shadow-md transition-all duration-200"
+                  className="bg-[#f2f2f2] rounded-2xl p-8 border border-stone-100 hover:border-[#e8b4bc] hover:shadow-md transition-all duration-200"
                 >
                   <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-5 ${color}`}>
                     <Icon size={22} />
@@ -151,7 +151,7 @@ export default async function HomePage() {
 
         {/* Courses Preview */}
         {courses.length > 0 && (
-          <section className="py-20 px-4 bg-[#e9d8b6]">
+          <section className="py-20 px-4 bg-[#f2f2f2]">
             <div className="max-w-7xl mx-auto">
               <div className="text-center mb-14">
                 <h2
