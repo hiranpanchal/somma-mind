@@ -1,0 +1,40 @@
+export const dynamic = "force-dynamic";
+
+import { auth } from "@/lib/auth";
+import { redirect, notFound } from "next/navigation";
+import { prisma } from "@/lib/db";
+import Link from "next/link";
+import { ChevronLeft } from "lucide-react";
+import ReviewForm from "../ReviewForm";
+
+export default async function EditReviewPage({ params }: { params: Promise<{ id: string }> }) {
+  const session = await auth();
+  if (!session || session.user.role !== "ADMIN") redirect("/dashboard");
+
+  const { id } = await params;
+  const review = await prisma.review.findUnique({ where: { id } });
+  if (!review) notFound();
+
+  return (
+    <div>
+      <Link href="/admin/reviews" className="inline-flex items-center gap-1 text-sm text-stone-500 hover:text-[#b76d79] mb-6">
+        <ChevronLeft size={16} /> Back to Reviews
+      </Link>
+      <h1 className="text-2xl font-bold text-[#1c1917] mb-6" style={{ fontFamily: "var(--font-playfair)" }}>
+        Edit Review
+      </h1>
+      <ReviewForm
+        mode="edit"
+        review={{
+          id: review.id,
+          name: review.name,
+          role: review.role ?? "",
+          quote: review.quote,
+          stars: review.stars,
+          published: review.published,
+          order: review.order,
+        }}
+      />
+    </div>
+  );
+}

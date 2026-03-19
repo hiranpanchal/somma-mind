@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import ReviewsCarousel from "@/components/ReviewsCarousel";
 import { prisma } from "@/lib/db";
 import { formatPrice } from "@/lib/utils";
 import { BookOpen, Headphones, Brain, Sparkles, ChevronRight, Star } from "lucide-react";
@@ -14,8 +15,16 @@ async function getPublishedCourses() {
   });
 }
 
+async function getPublishedReviews() {
+  return prisma.review.findMany({
+    where: { published: true },
+    orderBy: { order: "asc" },
+    take: 10,
+  });
+}
+
 export default async function HomePage() {
-  const courses = await getPublishedCourses();
+  const [courses, reviews] = await Promise.all([getPublishedCourses(), getPublishedReviews()]);
 
   return (
     <>
@@ -194,43 +203,19 @@ export default async function HomePage() {
         )}
 
         {/* Testimonials */}
-        <section className="py-20 px-4" style={{ background: "linear-gradient(135deg, #9a5864, #b76d79)" }}>
-          <div className="max-w-5xl mx-auto text-center">
-            <h2
-              className="text-4xl font-bold text-white mb-12"
-              style={{ fontFamily: "var(--font-playfair)" }}
-            >
-              What Students Say
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {[
-                {
-                  quote: "I've tried therapy, journaling, and mindfulness apps — nothing worked like this. the Somaa Mind helped me access a part of myself I'd been running from for years.",
-                  name: "Sarah M.",
-                  role: "Wellness Practitioner",
-                },
-                {
-                  quote: "The combination of hypnotherapy and somatic work is unlike anything else I've experienced. I finished the first module and felt genuinely lighter.",
-                  name: "James T.",
-                  role: "Life Coach",
-                },
-              ].map(({ quote, name, role }) => (
-                <div key={name} className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 text-left border border-white/20">
-                  <div className="flex gap-1 mb-4">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} size={14} className="text-amber-300 fill-amber-300" />
-                    ))}
-                  </div>
-                  <p className="text-white/90 text-sm leading-relaxed mb-6 italic">&ldquo;{quote}&rdquo;</p>
-                  <div>
-                    <p className="text-white font-semibold text-sm">{name}</p>
-                    <p className="text-white/60 text-xs">{role}</p>
-                  </div>
-                </div>
-              ))}
+        {reviews.length > 0 && (
+          <section className="py-20 px-4" style={{ background: "linear-gradient(135deg, #9a5864, #b76d79)" }}>
+            <div className="max-w-5xl mx-auto">
+              <h2
+                className="text-4xl font-bold text-white mb-12 text-center"
+                style={{ fontFamily: "var(--font-playfair)" }}
+              >
+                What Students Say
+              </h2>
+              <ReviewsCarousel reviews={reviews} />
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         {/* CTA */}
         <section className="py-20 px-4 bg-white text-center">

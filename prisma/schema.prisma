@@ -137,3 +137,15 @@ model UserAnswer {
 
   @@unique([userId, questionId])
 }
+
+model Review {
+  id        String   @id @default(cuid())
+  name      String
+  role      String?
+  quote     String
+  stars     Int      @default(5)
+  published Boolean  @default(false)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
