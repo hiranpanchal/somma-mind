@@ -11,9 +11,17 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
   const body = await req.json();
   const { name, role, quote, stars, published, order } = body;
 
+  const data: Record<string, unknown> = {};
+  if (name !== undefined) data.name = name;
+  if (role !== undefined) data.role = role || null;
+  if (quote !== undefined) data.quote = quote;
+  if (stars !== undefined) data.stars = Number(stars);
+  if (published !== undefined) data.published = !!published;
+  if (order !== undefined) data.order = Number(order) || 0;
+
   const review = await prisma.review.update({
     where: { id },
-    data: { name, role: role || null, quote, stars: Number(stars), published: !!published, order: Number(order) || 0 },
+    data,
   });
   return NextResponse.json(review);
 }
