@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import Providers from "@/components/layout/Providers";
+import { ColorVarsInjector } from "@/components/layout/ColorVarsInjector";
 import "./globals.css";
 
 const inter = Inter({
@@ -35,6 +36,7 @@ export default function RootLayout({
       className={`${inter.variable} ${playfair.variable} h-full`}
     >
       <body className="min-h-full flex flex-col bg-[#f2f2f2] text-[#1c1917] antialiased">
+        <ColorVarsInjector />
         <Providers>{children}</Providers>
       </body>
     </html>

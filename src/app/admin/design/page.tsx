@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Save, Upload, Copy, Check, Image as ImageIcon, Palette, Type, ExternalLink, X } from "lucide-react";
+import { Save, Upload, Copy, Check, Image as ImageIcon, Palette, Type, ExternalLink, X, Droplets } from "lucide-react";
 
 const DEFAULTS: Record<string, string> = {
   hero_title_before: "Transform from",
@@ -26,7 +26,140 @@ const DEFAULTS: Record<string, string> = {
   method_card_3_image: "",
 };
 
+const COLOR_DEFS = [
+  {
+    key: "color_primary",
+    label: "Primary",
+    badge: "Berry Rose",
+    desc: "Buttons, links, highlights & accents",
+    defaultVal: "#b76d79",
+  },
+  {
+    key: "color_primary_dark",
+    label: "Primary Dark",
+    badge: "Dark Berry",
+    desc: "Hover states on primary elements",
+    defaultVal: "#9a5864",
+  },
+  {
+    key: "color_background",
+    label: "Background",
+    badge: "Page",
+    desc: "Main site background colour",
+    defaultVal: "#f2f2f2",
+  },
+  {
+    key: "color_olive",
+    label: "Olive",
+    badge: "Botanical",
+    desc: "Botanical SVG illustrations",
+    defaultVal: "#85896c",
+  },
+  {
+    key: "color_mauve",
+    label: "Mauve",
+    badge: "Warm accent",
+    desc: "Hero gradient & warm accents",
+    defaultVal: "#c9a698",
+  },
+  {
+    key: "color_linen",
+    label: "Linen",
+    badge: "Soft neutral",
+    desc: "Hero gradient mid-tone",
+    defaultVal: "#d6cec4",
+  },
+];
+
 type ImageFile = { name: string; url: string; size: number; createdAt: string };
+
+// ─── Color Picker ────────────────────────────────────────────────────────────
+
+function ColorPicker({
+  colorKey, label, badge, desc, defaultVal, values, onChange,
+}: {
+  colorKey: string; label: string; badge: string; desc: string;
+  defaultVal: string; values: Record<string, string>;
+  onChange: (key: string, val: string) => void;
+}) {
+  const value = values[colorKey] || defaultVal;
+  const [hexInput, setHexInput] = useState(value.replace(/^#/, "").toUpperCase());
+
+  useEffect(() => {
+    setHexInput((values[colorKey] || defaultVal).replace(/^#/, "").toUpperCase());
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [values[colorKey]]);
+
+  function handlePickerChange(raw: string) {
+    setHexInput(raw.replace(/^#/, "").toUpperCase());
+    onChange(colorKey, raw);
+  }
+
+  function handleHexInput(raw: string) {
+    const clean = raw.replace(/[^0-9a-fA-F]/g, "").toUpperCase().slice(0, 6);
+    setHexInput(clean);
+    if (clean.length === 6) onChange(colorKey, `#${clean}`);
+  }
+
+  const isDefault = (values[colorKey] || defaultVal) === defaultVal;
+
+  return (
+    <div className="border border-stone-200 rounded-2xl p-4 space-y-3 hover:border-stone-300 transition-colors">
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-sm font-semibold text-stone-800">{label}</p>
+          <p className="text-xs text-stone-400 mt-0.5">{desc}</p>
+        </div>
+        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-stone-100 text-stone-500 uppercase tracking-wide whitespace-nowrap">
+          {badge}
+        </span>
+      </div>
+
+      <div className="flex items-center gap-3">
+        {/* Swatch + hidden colour input */}
+        <div className="relative flex-shrink-0 w-14 h-14 rounded-xl overflow-hidden border-2 border-stone-200 shadow-sm cursor-pointer group">
+          <div className="absolute inset-0" style={{ background: value }} />
+          <input
+            type="color"
+            value={value}
+            onChange={(e) => handlePickerChange(e.target.value)}
+            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            title="Open colour picker"
+          />
+          {/* Subtle click hint */}
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+            <Droplets size={14} className="text-white opacity-0 group-hover:opacity-80 transition-opacity drop-shadow" />
+          </div>
+        </div>
+
+        {/* Hex input */}
+        <div className="flex-1">
+          <div className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-stone-200 bg-stone-50 focus-within:border-[#b76d79] focus-within:ring-2 focus-within:ring-[#b76d79]/20 transition-all">
+            <span className="text-stone-400 font-mono text-sm font-semibold">#</span>
+            <input
+              type="text"
+              value={hexInput}
+              onChange={(e) => handleHexInput(e.target.value)}
+              maxLength={6}
+              className="flex-1 bg-transparent text-sm font-mono text-stone-800 focus:outline-none uppercase tracking-widest min-w-0"
+              placeholder="B76D79"
+            />
+          </div>
+          {!isDefault && (
+            <button
+              onClick={() => { onChange(colorKey, defaultVal); setHexInput(defaultVal.replace(/^#/, "").toUpperCase()); }}
+              className="text-[10px] text-stone-400 hover:text-stone-600 mt-1 ml-1 transition-colors"
+            >
+              Reset to default
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Text Field ───────────────────────────────────────────────────────────────
 
 function Field({
   label, fieldKey, values, onChange, multiline = false, placeholder,
@@ -50,6 +183,8 @@ function Field({
     </div>
   );
 }
+
+// ─── Card Image Upload ────────────────────────────────────────────────────────
 
 function CardImageUpload({
   cardNum, values, onChange,
@@ -105,6 +240,8 @@ function CardImageUpload({
   );
 }
 
+// ─── Section Wrapper ──────────────────────────────────────────────────────────
+
 function Section({
   title, icon: Icon, children, onSave, saving, saved,
 }: {
@@ -131,6 +268,8 @@ function Section({
   );
 }
 
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
 export default function DesignPage() {
   const [values, setValues] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
@@ -139,7 +278,7 @@ export default function DesignPage() {
   const [images, setImages] = useState<ImageFile[]>([]);
   const [uploading, setUploading] = useState(false);
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"hero" | "method" | "images">("hero");
+  const [activeTab, setActiveTab] = useState<"hero" | "method" | "images" | "colors">("hero");
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -187,17 +326,25 @@ export default function DesignPage() {
 
   const heroKeys = ["hero_title_before","hero_title_highlight","hero_title_after","hero_description","hero_cta_primary_text","hero_cta_primary_url","hero_cta_secondary_text","hero_cta_secondary_url"];
   const methodKeys = ["method_title","method_subtitle","method_card_1_title","method_card_1_desc","method_card_1_image","method_card_2_title","method_card_2_desc","method_card_2_image","method_card_3_title","method_card_3_desc","method_card_3_image"];
+  const colorKeys = COLOR_DEFS.map((c) => c.key);
 
   if (loading) {
     return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-2 border-[#b76d79] border-t-transparent rounded-full animate-spin" /></div>;
   }
+
+  const tabs = [
+    { id: "hero",   label: "Hero Section" },
+    { id: "method", label: "Method Section" },
+    { id: "colors", label: "Colours" },
+    { id: "images", label: "Images" },
+  ] as const;
 
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-stone-900" style={{ fontFamily: "var(--font-playfair)" }}>Design</h1>
-          <p className="text-stone-500 text-sm mt-1">Edit your site content and images</p>
+          <p className="text-stone-500 text-sm mt-1">Edit your site content, colours and images</p>
         </div>
         <a href="/" target="_blank" className="flex items-center gap-2 px-4 py-2 rounded-xl border border-stone-200 text-sm text-stone-600 hover:bg-stone-50 transition-colors">
           <ExternalLink size={14} /> Preview Site
@@ -205,15 +352,16 @@ export default function DesignPage() {
       </div>
 
       <div className="flex gap-1 bg-stone-100 p-1 rounded-xl mb-6 w-fit">
-        {(["hero", "method", "images"] as const).map((tab) => (
-          <button key={tab} onClick={() => setActiveTab(tab)}
-            className={`px-5 py-2 rounded-lg text-sm font-medium capitalize transition-all ${activeTab === tab ? "bg-white text-[#b76d79] shadow-sm" : "text-stone-500 hover:text-stone-700"}`}>
-            {tab === "images" ? "Images" : tab === "hero" ? "Hero Section" : "Method Section"}
+        {tabs.map((tab) => (
+          <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+            className={`px-5 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === tab.id ? "bg-white text-[#b76d79] shadow-sm" : "text-stone-500 hover:text-stone-700"}`}>
+            {tab.label}
           </button>
         ))}
       </div>
 
       <div className="space-y-6">
+        {/* ── Hero ── */}
         {activeTab === "hero" && (
           <Section title="Hero Section" icon={Type} onSave={() => saveSection(heroKeys, "hero")} saving={!!saving.hero} saved={!!saved.hero}>
             <div className="bg-stone-50 rounded-xl p-4 mb-2">
@@ -241,6 +389,7 @@ export default function DesignPage() {
           </Section>
         )}
 
+        {/* ── Method ── */}
         {activeTab === "method" && (
           <Section title="The Method Section" icon={Palette} onSave={() => saveSection(methodKeys, "method")} saving={!!saving.method} saved={!!saved.method}>
             <div className="grid grid-cols-2 gap-4">
@@ -258,6 +407,105 @@ export default function DesignPage() {
           </Section>
         )}
 
+        {/* ── Colours ── */}
+        {activeTab === "colors" && (
+          <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-stone-100">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-[#f5e4e7] flex items-center justify-center">
+                  <Palette size={16} className="text-[#b76d79]" />
+                </div>
+                <div>
+                  <h2 className="font-semibold text-stone-800">Brand Colours</h2>
+                  <p className="text-xs text-stone-400">Changes apply site-wide — click any swatch to open colour picker</p>
+                </div>
+              </div>
+              <button
+                onClick={() => saveSection(colorKeys, "colors")}
+                disabled={!!saving.colors}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${saved.colors ? "bg-green-100 text-green-700" : "bg-[#b76d79] text-white hover:bg-[#9a5864]"} disabled:opacity-60`}
+              >
+                {saved.colors ? <Check size={14} /> : <Save size={14} />}
+                {saved.colors ? "Saved!" : saving.colors ? "Saving…" : "Save Colours"}
+              </button>
+            </div>
+
+            <div className="p-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {COLOR_DEFS.map((def) => (
+                  <ColorPicker
+                    key={def.key}
+                    colorKey={def.key}
+                    label={def.label}
+                    badge={def.badge}
+                    desc={def.desc}
+                    defaultVal={def.defaultVal}
+                    values={values}
+                    onChange={onChange}
+                  />
+                ))}
+              </div>
+
+              {/* Live palette preview */}
+              <div className="mt-6 p-5 bg-stone-50 rounded-2xl border border-stone-100">
+                <p className="text-xs font-semibold text-stone-400 uppercase tracking-wide mb-4">Palette Preview</p>
+                <div className="flex flex-wrap gap-3">
+                  {COLOR_DEFS.map((def) => {
+                    const val = values[def.key] || def.defaultVal;
+                    return (
+                      <div key={def.key} className="flex items-center gap-2.5">
+                        <div
+                          className="w-9 h-9 rounded-xl shadow-sm border border-white"
+                          style={{ background: val }}
+                          title={val}
+                        />
+                        <div>
+                          <p className="text-xs font-medium text-stone-700 leading-none">{def.label}</p>
+                          <p className="text-[10px] text-stone-400 font-mono mt-0.5">{val.toUpperCase()}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Sample UI button preview */}
+                <div className="mt-5 pt-4 border-t border-stone-200">
+                  <p className="text-xs font-semibold text-stone-400 uppercase tracking-wide mb-3">Button Preview</p>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <span
+                      className="inline-flex items-center px-5 py-2.5 rounded-full text-sm font-semibold text-white shadow-sm transition-colors"
+                      style={{ background: values.color_primary || "#b76d79" }}
+                    >
+                      Primary Button
+                    </span>
+                    <span
+                      className="inline-flex items-center px-5 py-2.5 rounded-full text-sm font-semibold border transition-colors"
+                      style={{
+                        color: values.color_primary || "#b76d79",
+                        borderColor: values.color_primary || "#b76d79",
+                        background: "white",
+                      }}
+                    >
+                      Secondary Button
+                    </span>
+                    <span
+                      className="text-sm font-semibold underline-offset-2"
+                      style={{ color: values.color_primary || "#b76d79" }}
+                    >
+                      Text link →
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-xs text-stone-400 mt-4">
+                💡 After saving, refresh the public site to see your colour changes applied.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* ── Images ── */}
         {activeTab === "images" && (
           <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden">
             <div className="flex items-center justify-between px-6 py-4 border-b border-stone-100">
