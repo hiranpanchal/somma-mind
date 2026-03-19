@@ -73,7 +73,7 @@ export default function Header() {
                 </Link>
                 <Link
                   href="/register"
-                  className="bg-violet-brand text-white text-sm font-medium px-4 py-2 rounded-full hover:bg-indigo-brand transition-colors"
+                  className="bg-[#b76d79] text-white text-sm font-medium px-4 py-2 rounded-full hover:bg-[#9a5864] transition-colors"
                 >
                   Get Started
                 </Link>
@@ -123,7 +123,7 @@ export default function Header() {
                 </Link>
                 <Link
                   href="/register"
-                  className="bg-violet-brand text-white text-sm font-medium px-4 py-2 rounded-full text-center"
+                  className="bg-[#b76d79] text-white text-sm font-medium px-4 py-2 rounded-full text-center hover:bg-[#9a5864] transition-colors"
                   onClick={() => setMenuOpen(false)}
                 >
                   Get Started
