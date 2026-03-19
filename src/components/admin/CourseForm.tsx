@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { slugify } from "@/lib/utils";
-import { Save } from "lucide-react";
+import { Save, Upload, X } from "lucide-react";
 
 interface CourseFormData {
   id?: string;
@@ -14,12 +14,136 @@ interface CourseFormData {
   published: boolean;
   order: string;
   slug: string;
+  thumbnail: string;
 }
 
 interface Props {
   initialData?: CourseFormData;
   mode: "create" | "edit";
 }
+
+// ─── Thumbnail Uploader ───────────────────────────────────────────────────────
+
+function ThumbnailUpload({
+  value, onChange,
+}: {
+  value: string; onChange: (url: string) => void;
+}) {
+  const [uploading, setUploading] = useState(false);
+  const [dragging, setDragging] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  async function uploadFile(file: File) {
+    if (!file.type.startsWith("image/")) return;
+    setUploading(true);
+    const fd = new FormData();
+    fd.append("file", file);
+    const res = await fetch("/api/admin/upload-image", { method: "POST", body: fd });
+    const { url } = await res.json();
+    if (url) onChange(url);
+    setUploading(false);
+    if (fileRef.current) fileRef.current.value = "";
+  }
+
+  function handleInput(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) uploadFile(file);
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault();
+    setDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) uploadFile(file);
+  }
+
+  function handleDragOver(e: React.DragEvent) {
+    e.preventDefault();
+    setDragging(true);
+  }
+
+  function handleDragLeave(e: React.DragEvent) {
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) setDragging(false);
+  }
+
+  return (
+    <div>
+      <label className="block text-sm font-medium text-stone-700 mb-1.5">
+        Course Thumbnail
+      </label>
+
+      {value ? (
+        <div
+          className={`relative rounded-xl overflow-hidden border-2 transition-all ${dragging ? "border-[#b76d79] ring-2 ring-[#b76d79]/20 scale-[1.01]" : "border-stone-200"}`}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+        >
+          <img
+            src={value}
+            alt="Course thumbnail"
+            className={`w-full h-48 object-cover transition-opacity ${dragging ? "opacity-40" : "opacity-100"}`}
+          />
+          {dragging && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/60 backdrop-blur-sm pointer-events-none">
+              <Upload size={24} className="text-[#b76d79] mb-1" />
+              <span className="text-sm font-medium text-[#b76d79]">Drop to replace</span>
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={() => onChange("")}
+            className="absolute top-2 right-2 bg-white/90 hover:bg-white text-stone-600 hover:text-red-500 p-1.5 rounded-lg shadow transition-colors"
+          >
+            <X size={14} />
+          </button>
+          <div className="absolute bottom-0 left-0 right-0 bg-black/40 px-3 py-1.5 flex items-center justify-between">
+            <span className="text-white text-xs truncate">{value.split("/").pop()}</span>
+            <label className="cursor-pointer text-white/80 hover:text-white text-xs flex items-center gap-1">
+              <Upload size={11} /> Replace
+              <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleInput} disabled={uploading} />
+            </label>
+          </div>
+        </div>
+      ) : (
+        <div
+          className={`relative flex flex-col items-center justify-center h-36 rounded-xl border-2 border-dashed transition-all cursor-pointer
+            ${dragging
+              ? "border-[#b76d79] bg-[#fdf0f2] scale-[1.01] ring-2 ring-[#b76d79]/20"
+              : uploading
+              ? "border-stone-200 bg-stone-50 opacity-60"
+              : "border-stone-200 bg-stone-50 hover:border-[#b76d79] hover:bg-[#fdf0f2]"
+            }`}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onClick={() => fileRef.current?.click()}
+        >
+          <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleInput} disabled={uploading} />
+          {uploading ? (
+            <>
+              <div className="w-6 h-6 border-2 border-[#b76d79] border-t-transparent rounded-full animate-spin mb-2" />
+              <span className="text-xs text-stone-500">Uploading…</span>
+            </>
+          ) : dragging ? (
+            <>
+              <Upload size={24} className="text-[#b76d79] mb-2" />
+              <span className="text-sm font-medium text-[#b76d79]">Drop image here</span>
+            </>
+          ) : (
+            <>
+              <Upload size={20} className="text-stone-400 mb-2" />
+              <span className="text-sm text-stone-500">Drop image here</span>
+              <span className="text-xs text-stone-400 mt-0.5">or click to browse</span>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Course Form ──────────────────────────────────────────────────────────────
 
 export default function CourseForm({ initialData, mode }: Props) {
   const router = useRouter();
@@ -32,6 +156,7 @@ export default function CourseForm({ initialData, mode }: Props) {
       published: false,
       order: "0",
       slug: "",
+      thumbnail: "",
     }
   );
   const [loading, setLoading] = useState(false);
@@ -96,7 +221,7 @@ export default function CourseForm({ initialData, mode }: Props) {
             value={form.title}
             onChange={(e) => handleTitleChange(e.target.value)}
             required
-            className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50 focus:outline-none focus:ring-2 focus:ring-violet-400 text-sm"
+            className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50 focus:outline-none focus:ring-2 focus:ring-[#b76d79] text-sm"
             placeholder="e.g. Foundations of Somatic Healing"
           />
         </div>
@@ -108,7 +233,7 @@ export default function CourseForm({ initialData, mode }: Props) {
             value={form.slug}
             onChange={(e) => setForm((prev) => ({ ...prev, slug: e.target.value }))}
             required
-            className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50 focus:outline-none focus:ring-2 focus:ring-violet-400 text-sm font-mono"
+            className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50 focus:outline-none focus:ring-2 focus:ring-[#b76d79] text-sm font-mono"
             placeholder="foundations-of-somatic-healing"
           />
           <p className="text-xs text-stone-400 mt-1">Used in the URL: /courses/{form.slug || "..."}</p>
@@ -120,7 +245,7 @@ export default function CourseForm({ initialData, mode }: Props) {
             type="text"
             value={form.subtitle}
             onChange={(e) => setForm((prev) => ({ ...prev, subtitle: e.target.value }))}
-            className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50 focus:outline-none focus:ring-2 focus:ring-violet-400 text-sm"
+            className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50 focus:outline-none focus:ring-2 focus:ring-[#b76d79] text-sm"
             placeholder="A short tagline for this course"
           />
         </div>
@@ -132,10 +257,15 @@ export default function CourseForm({ initialData, mode }: Props) {
             onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
             required
             rows={4}
-            className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50 focus:outline-none focus:ring-2 focus:ring-violet-400 text-sm resize-none"
+            className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50 focus:outline-none focus:ring-2 focus:ring-[#b76d79] text-sm resize-none"
             placeholder="Describe what students will learn and experience..."
           />
         </div>
+
+        <ThumbnailUpload
+          value={form.thumbnail}
+          onChange={(url) => setForm((prev) => ({ ...prev, thumbnail: url }))}
+        />
 
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -147,7 +277,7 @@ export default function CourseForm({ initialData, mode }: Props) {
               value={form.price}
               onChange={(e) => setForm((prev) => ({ ...prev, price: e.target.value }))}
               required
-              className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50 focus:outline-none focus:ring-2 focus:ring-violet-400 text-sm"
+              className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50 focus:outline-none focus:ring-2 focus:ring-[#b76d79] text-sm"
               placeholder="99.00"
             />
           </div>
@@ -158,7 +288,7 @@ export default function CourseForm({ initialData, mode }: Props) {
               min="0"
               value={form.order}
               onChange={(e) => setForm((prev) => ({ ...prev, order: e.target.value }))}
-              className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50 focus:outline-none focus:ring-2 focus:ring-violet-400 text-sm"
+              className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50 focus:outline-none focus:ring-2 focus:ring-[#b76d79] text-sm"
             />
           </div>
         </div>

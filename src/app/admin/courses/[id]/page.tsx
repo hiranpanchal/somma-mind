@@ -40,6 +40,7 @@ export default async function EditCoursePage({ params }: Props) {
           published: course.published,
           order: course.order.toString(),
           slug: course.slug,
+          thumbnail: course.thumbnail ?? "",
         }}
       />
     </div>

@@ -26,6 +26,7 @@ export async function PATCH(req: Request, { params }: Params) {
       price: parseFloat(body.price),
       published: body.published,
       order: parseInt(body.order),
+      thumbnail: body.thumbnail || null,
     },
   });
 
