@@ -11,7 +11,7 @@ export default async function AdminCoursesPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-wrap items-start justify-between gap-3 mb-8">
         <div>
           <h1 className="text-2xl font-bold text-[#1c1917]" style={{ fontFamily: "var(--font-playfair)" }}>
             Courses
@@ -39,7 +39,8 @@ export default async function AdminCoursesPage() {
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden">
-          <table className="w-full text-sm">
+          <div className="overflow-x-auto">
+          <table className="w-full text-sm min-w-[640px]">
             <thead>
               <tr className="border-b border-stone-100 text-left">
                 <th className="px-5 py-3 text-xs font-semibold text-stone-500 uppercase tracking-wider">Course</th>
@@ -91,6 +92,7 @@ export default async function AdminCoursesPage() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
     </div>

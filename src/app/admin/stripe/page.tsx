@@ -76,7 +76,7 @@ export default async function AdminStripePage() {
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-wrap items-start justify-between gap-3 mb-8">
         <div>
           <h1
             className="text-2xl font-bold text-[#1c1917]"
@@ -188,7 +188,7 @@ export default async function AdminStripePage() {
 
         {sessions.length > 0 ? (
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-sm min-w-[640px]">
               <thead>
                 <tr className="border-b border-stone-100 bg-stone-50">
                   <th className="px-5 py-3 text-left text-xs font-semibold text-stone-500 uppercase tracking-wide">Customer</th>
@@ -256,7 +256,7 @@ export default async function AdminStripePage() {
             <p className="text-xs text-stone-400 mt-0.5">From database — connect Stripe to see payment details</p>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-sm min-w-[560px]">
               <thead>
                 <tr className="border-b border-stone-100 bg-stone-50">
                   <th className="px-5 py-3 text-left text-xs font-semibold text-stone-500 uppercase tracking-wide">Student</th>

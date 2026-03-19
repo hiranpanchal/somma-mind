@@ -1,64 +1,16 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import Link from "next/link";
-import { BookOpen, LayoutDashboard, Users, LogOut, CreditCard, Star, Palette } from "lucide-react";
+import AdminSidebar from "@/components/admin/AdminSidebar";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
   if (!session || session.user.role !== "ADMIN") redirect("/dashboard");
 
   return (
-    <div className="min-h-screen bg-[#f2f2f2] flex">
-      {/* Sidebar */}
-      <aside className="w-64 bg-[#1c1917] text-white flex flex-col fixed inset-y-0 left-0 z-40">
-        <div className="p-6 border-b border-white/10">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-xl font-light text-white" style={{ fontFamily: "var(--font-playfair)" }}>
-              the{" "}
-            </span>
-            <span className="text-xl font-bold text-[#b76d79]" style={{ fontFamily: "var(--font-playfair)" }}>
-              Somaa
-            </span>
-            <span className="text-xl font-light text-white" style={{ fontFamily: "var(--font-playfair)" }}>
-              {" "}Mind
-            </span>
-          </Link>
-          <p className="text-xs text-white/40 mt-1">Admin Panel</p>
-        </div>
-
-        <nav className="flex-1 p-4 space-y-1">
-          {[
-            { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-            { href: "/admin/courses", label: "Courses", icon: BookOpen },
-            { href: "/admin/users", label: "Students", icon: Users },
-            { href: "/admin/reviews", label: "Reviews", icon: Star },
-            { href: "/admin/stripe", label: "Payments", icon: CreditCard },
-            { href: "/admin/design", label: "Design", icon: Palette },
-          ].map(({ href, label, icon: Icon }) => (
-            <Link
-              key={href}
-              href={href}
-              className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-white/70 hover:bg-white/10 hover:text-white transition-all"
-            >
-              <Icon size={16} />
-              {label}
-            </Link>
-          ))}
-        </nav>
-
-        <div className="p-4 border-t border-white/10">
-          <Link
-            href="/"
-            className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-white/50 hover:text-white hover:bg-white/10 transition-all"
-          >
-            <LogOut size={16} />
-            Back to Site
-          </Link>
-        </div>
-      </aside>
-
-      {/* Main */}
-      <main className="ml-64 flex-1 p-8 min-h-screen">
+    <div className="min-h-screen bg-[#f2f2f2]">
+      <AdminSidebar />
+      {/* pt-14 accounts for the mobile top bar height; md:ml-64 for desktop sidebar */}
+      <main className="pt-14 md:pt-0 md:ml-64 p-4 md:p-8 min-h-screen">
         {children}
       </main>
     </div>

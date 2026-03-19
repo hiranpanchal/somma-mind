@@ -15,7 +15,7 @@ export default async function AdminReviewsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-wrap items-start justify-between gap-3 mb-8">
         <div>
           <h1 className="text-2xl font-bold text-[#1c1917]" style={{ fontFamily: "var(--font-playfair)" }}>
             Reviews
@@ -40,7 +40,8 @@ export default async function AdminReviewsPage() {
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden">
-          <table className="w-full">
+          <div className="overflow-x-auto">
+          <table className="w-full min-w-[560px]">
             <thead className="border-b border-stone-100">
               <tr>
                 <th className="px-5 py-3.5 text-left text-xs font-semibold text-stone-400 uppercase tracking-wider">Name</th>
@@ -86,6 +87,7 @@ export default async function AdminReviewsPage() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
     </div>

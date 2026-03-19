@@ -21,7 +21,7 @@ export default async function AdminDashboard() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-wrap items-start justify-between gap-3 mb-8">
         <div>
           <h1 className="text-2xl font-bold text-[#1c1917]" style={{ fontFamily: "var(--font-playfair)" }}>
             Admin Dashboard
@@ -86,27 +86,29 @@ export default async function AdminDashboard() {
           <p className="text-stone-400 text-sm">No enrollments yet.</p>
         ) : (
           <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-stone-100 text-left">
-                  <th className="px-5 py-3 text-xs font-semibold text-stone-500 uppercase tracking-wider">Student</th>
-                  <th className="px-5 py-3 text-xs font-semibold text-stone-500 uppercase tracking-wider">Course</th>
-                  <th className="px-5 py-3 text-xs font-semibold text-stone-500 uppercase tracking-wider">Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentEnrollments.map((e) => (
-                  <tr key={e.id} className="border-b border-stone-50 last:border-0 hover:bg-stone-50">
-                    <td className="px-5 py-3">
-                      <p className="font-medium text-[#1c1917]">{e.user.name}</p>
-                      <p className="text-xs text-stone-400">{e.user.email}</p>
-                    </td>
-                    <td className="px-5 py-3 text-stone-600">{e.course.title}</td>
-                    <td className="px-5 py-3 text-stone-400">{new Date(e.purchasedAt).toLocaleDateString()}</td>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm min-w-[480px]">
+                <thead>
+                  <tr className="border-b border-stone-100 text-left">
+                    <th className="px-5 py-3 text-xs font-semibold text-stone-500 uppercase tracking-wider">Student</th>
+                    <th className="px-5 py-3 text-xs font-semibold text-stone-500 uppercase tracking-wider">Course</th>
+                    <th className="px-5 py-3 text-xs font-semibold text-stone-500 uppercase tracking-wider">Date</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {recentEnrollments.map((e) => (
+                    <tr key={e.id} className="border-b border-stone-50 last:border-0 hover:bg-stone-50">
+                      <td className="px-5 py-3">
+                        <p className="font-medium text-[#1c1917]">{e.user.name}</p>
+                        <p className="text-xs text-stone-400">{e.user.email}</p>
+                      </td>
+                      <td className="px-5 py-3 text-stone-600">{e.course.title}</td>
+                      <td className="px-5 py-3 text-stone-400 whitespace-nowrap">{new Date(e.purchasedAt).toLocaleDateString()}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>
