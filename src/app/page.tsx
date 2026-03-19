@@ -7,6 +7,7 @@ import { formatPrice } from "@/lib/utils";
 import { BookOpen, ChevronRight } from "lucide-react";
 
 const CONTENT_DEFAULTS: Record<string, string> = {
+  hero_banner_image: "",
   hero_title_before: "Transform from",
   hero_title_highlight: "the inside",
   hero_title_after: "out",
@@ -75,8 +76,16 @@ export default async function HomePage() {
         {/* Hero */}
         <section
           className="relative overflow-hidden py-24 px-4"
-          style={{ background: "linear-gradient(135deg, #f2f2f2 0%, #d6cec4 50%, #c9a698 100%)" }}
+          style={
+            c("hero_banner_image")
+              ? { backgroundImage: `url(${c("hero_banner_image")})`, backgroundSize: "cover", backgroundPosition: "center" }
+              : { background: "linear-gradient(135deg, #f2f2f2 0%, #d6cec4 50%, #c9a698 100%)" }
+          }
         >
+          {/* Dark overlay when a banner image is set, to keep text readable */}
+          {c("hero_banner_image") && (
+            <div className="absolute inset-0 bg-black/35 pointer-events-none" />
+          )}
           <svg className="absolute left-0 bottom-0 w-64 h-80 opacity-30 hidden md:block" viewBox="0 0 260 320" fill="none">
             <path d="M60 320 Q80 260 60 200 Q40 140 80 80 Q100 40 120 20" stroke="#b76d79" strokeWidth="1.5" fill="none"/>
             <path d="M60 200 Q20 190 5 160" stroke="#b76d79" strokeWidth="1" fill="none"/>
@@ -95,19 +104,30 @@ export default async function HomePage() {
           </svg>
 
           <div className="relative max-w-4xl mx-auto text-center">
-            <h1 className="text-5xl md:text-7xl font-bold text-[#1c1917] mb-6 leading-tight" style={{ fontFamily: "var(--font-playfair)" }}>
+            <h1
+              className="text-5xl md:text-7xl font-bold mb-6 leading-tight"
+              style={{ fontFamily: "var(--font-playfair)", color: c("hero_banner_image") ? "#ffffff" : "#1c1917" }}
+            >
               {c("hero_title_before")}
-              <span className="text-[#b76d79]"> {c("hero_title_highlight")}</span>{" "}
+              <span style={{ color: c("hero_banner_image") ? "#f5c6cc" : "#b76d79" }}> {c("hero_title_highlight")}</span>{" "}
               {c("hero_title_after")}
             </h1>
-            <p className="text-lg md:text-xl text-stone-600 mb-10 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg md:text-xl mb-10 max-w-2xl mx-auto leading-relaxed"
+              style={{ color: c("hero_banner_image") ? "rgba(255,255,255,0.9)" : "#57534e" }}>
               {c("hero_description")}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href={c("hero_cta_primary_url")} className="bg-[#b76d79] text-white font-semibold px-8 py-4 rounded-full hover:bg-[#9a5864] transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
                 {c("hero_cta_primary_text")} <ChevronRight size={16} />
               </Link>
-              <Link href={c("hero_cta_secondary_url")} className="bg-white text-[#b76d79] font-semibold px-8 py-4 rounded-full border border-[#b76d79] hover:bg-[#fdf0f2] transition-all duration-200 flex items-center justify-center gap-2">
+              <Link
+                href={c("hero_cta_secondary_url")}
+                className="font-semibold px-8 py-4 rounded-full transition-all duration-200 flex items-center justify-center gap-2"
+                style={c("hero_banner_image")
+                  ? { background: "rgba(255,255,255,0.15)", color: "#ffffff", border: "1px solid rgba(255,255,255,0.5)" }
+                  : { background: "#ffffff", color: "#b76d79", border: "1px solid #b76d79" }
+                }
+              >
                 {c("hero_cta_secondary_text")}
               </Link>
             </div>

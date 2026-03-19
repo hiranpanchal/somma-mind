@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { Save, Upload, Copy, Check, Image as ImageIcon, Palette, Type, ExternalLink, X, Droplets } from "lucide-react";
 
 const DEFAULTS: Record<string, string> = {
+  hero_banner_image: "",
   hero_title_before: "Transform from",
   hero_title_highlight: "the inside",
   hero_title_after: "out",
@@ -302,6 +303,131 @@ function CardImageUpload({
   );
 }
 
+// ─── Banner Image Upload ──────────────────────────────────────────────────────
+
+function BannerImageUpload({
+  values, onChange,
+}: {
+  values: Record<string, string>; onChange: (key: string, val: string) => void;
+}) {
+  const [uploading, setUploading] = useState(false);
+  const [dragging, setDragging] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const imgKey = "hero_banner_image";
+  const currentUrl = values[imgKey] ?? "";
+
+  async function uploadFile(file: File) {
+    if (!file.type.startsWith("image/")) return;
+    setUploading(true);
+    const fd = new FormData();
+    fd.append("file", file);
+    const res = await fetch("/api/admin/upload-image", { method: "POST", body: fd });
+    const { url } = await res.json();
+    if (url) onChange(imgKey, url);
+    setUploading(false);
+    if (fileRef.current) fileRef.current.value = "";
+  }
+
+  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (file) uploadFile(file);
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault();
+    setDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) uploadFile(file);
+  }
+
+  function handleDragOver(e: React.DragEvent) {
+    e.preventDefault();
+    setDragging(true);
+  }
+
+  function handleDragLeave(e: React.DragEvent) {
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) setDragging(false);
+  }
+
+  return (
+    <div>
+      <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wide mb-1">
+        Banner Image
+      </label>
+      <p className="text-xs text-stone-400 mb-2">
+        Fills the hero background. If none is set, the gradient is used as fallback.
+      </p>
+
+      {currentUrl ? (
+        <div
+          className={`relative rounded-xl overflow-hidden border-2 transition-all ${dragging ? "border-[#b76d79] ring-2 ring-[#b76d79]/20 scale-[1.01]" : "border-stone-200"}`}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+        >
+          <img
+            src={currentUrl}
+            alt="Hero banner"
+            className={`w-full h-56 object-cover transition-opacity ${dragging ? "opacity-40" : "opacity-100"}`}
+          />
+          {dragging && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/60 backdrop-blur-sm pointer-events-none">
+              <Upload size={28} className="text-[#b76d79] mb-1" />
+              <span className="text-sm font-medium text-[#b76d79]">Drop to replace</span>
+            </div>
+          )}
+          <button
+            onClick={() => onChange(imgKey, "")}
+            className="absolute top-2 right-2 bg-white/90 hover:bg-white text-stone-600 hover:text-red-500 p-1.5 rounded-lg shadow transition-colors"
+          >
+            <X size={14} />
+          </button>
+          <div className="absolute bottom-0 left-0 right-0 bg-black/40 px-3 py-1.5 flex items-center justify-between">
+            <span className="text-white text-xs truncate">{currentUrl.split("/").pop()}</span>
+            <label className="cursor-pointer text-white/80 hover:text-white text-xs flex items-center gap-1">
+              <Upload size={11} /> Replace
+              <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleInputChange} disabled={uploading} />
+            </label>
+          </div>
+        </div>
+      ) : (
+        <div
+          className={`relative flex flex-col items-center justify-center h-44 rounded-xl border-2 border-dashed transition-all cursor-pointer
+            ${dragging
+              ? "border-[#b76d79] bg-[#fdf0f2] scale-[1.01] ring-2 ring-[#b76d79]/20"
+              : uploading
+              ? "border-stone-200 bg-stone-50 opacity-60"
+              : "border-stone-200 bg-stone-50 hover:border-[#b76d79] hover:bg-[#fdf0f2]"
+            }`}
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onClick={() => fileRef.current?.click()}
+        >
+          <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleInputChange} disabled={uploading} />
+          {uploading ? (
+            <>
+              <div className="w-6 h-6 border-2 border-[#b76d79] border-t-transparent rounded-full animate-spin mb-2" />
+              <span className="text-xs text-stone-500">Uploading…</span>
+            </>
+          ) : dragging ? (
+            <>
+              <Upload size={28} className="text-[#b76d79] mb-2" />
+              <span className="text-sm font-medium text-[#b76d79]">Drop banner image here</span>
+            </>
+          ) : (
+            <>
+              <Upload size={22} className="text-stone-400 mb-2" />
+              <span className="text-sm text-stone-500">Drop banner image here</span>
+              <span className="text-xs text-stone-400 mt-0.5">or click to browse — gradient used if empty</span>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Section Wrapper ──────────────────────────────────────────────────────────
 
 function Section({
@@ -386,7 +512,7 @@ export default function DesignPage() {
     setTimeout(() => setCopiedUrl(null), 2000);
   }
 
-  const heroKeys = ["hero_title_before","hero_title_highlight","hero_title_after","hero_description","hero_cta_primary_text","hero_cta_primary_url","hero_cta_secondary_text","hero_cta_secondary_url"];
+  const heroKeys = ["hero_banner_image","hero_title_before","hero_title_highlight","hero_title_after","hero_description","hero_cta_primary_text","hero_cta_primary_url","hero_cta_secondary_text","hero_cta_secondary_url"];
   const methodKeys = ["method_title","method_subtitle","method_card_1_title","method_card_1_desc","method_card_1_image","method_card_2_title","method_card_2_desc","method_card_2_image","method_card_3_title","method_card_3_desc","method_card_3_image"];
   const colorKeys = COLOR_DEFS.map((c) => c.key);
 
@@ -426,6 +552,7 @@ export default function DesignPage() {
         {/* ── Hero ── */}
         {activeTab === "hero" && (
           <Section title="Hero Section" icon={Type} onSave={() => saveSection(heroKeys, "hero")} saving={!!saving.hero} saved={!!saved.hero}>
+            <BannerImageUpload values={values} onChange={onChange} />
             <div className="bg-stone-50 rounded-xl p-4 mb-2">
               <p className="text-xs text-stone-500 mb-1 font-medium">HEADLINE PREVIEW</p>
               <p className="text-2xl font-bold" style={{ fontFamily: "var(--font-playfair)" }}>
