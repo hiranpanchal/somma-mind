@@ -65,9 +65,9 @@ export default async function CourseDetailPage({ params }: Props) {
                   {course.title}
                 </h1>
                 {course.subtitle && (
-                  <p className="text-xl text-stone-500 mb-5">{course.subtitle}</p>
+                  <p className="text-xl text-stone-500 mb-5" dangerouslySetInnerHTML={{ __html: course.subtitle }} />
                 )}
-                <p className="text-stone-600 leading-relaxed mb-6">{course.description}</p>
+                <p className="text-stone-600 leading-relaxed mb-6" dangerouslySetInnerHTML={{ __html: course.description }} />
                 <div className="flex items-center gap-6 text-sm text-stone-500">
                   <span className="flex items-center gap-1.5">
                     <Clock size={14} /> {course._count.modules} modules
@@ -143,7 +143,7 @@ export default async function CourseDetailPage({ params }: Props) {
                     <div className="flex-1">
                       <p className="font-medium text-[#1c1917] text-sm">{mod.title}</p>
                       {mod.description && (
-                        <p className="text-xs text-stone-500 mt-0.5">{mod.description}</p>
+                        <p className="text-xs text-stone-500 mt-0.5" dangerouslySetInnerHTML={{ __html: mod.description ?? "" }} />
                       )}
                     </div>
                     <span className="text-xs text-stone-400 bg-stone-100 px-2 py-0.5 rounded-full">

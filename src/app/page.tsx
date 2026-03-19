@@ -113,9 +113,9 @@ export default async function HomePage() {
               {c("hero_title_after")}
             </h1>
             <p className="text-lg md:text-xl mb-10 max-w-2xl mx-auto leading-relaxed"
-              style={{ color: c("hero_banner_image") ? "rgba(255,255,255,0.9)" : "#57534e" }}>
-              {c("hero_description")}
-            </p>
+              style={{ color: c("hero_banner_image") ? "rgba(255,255,255,0.9)" : "#57534e" }}
+              dangerouslySetInnerHTML={{ __html: c("hero_description") }}
+            />
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href={c("hero_cta_primary_url")} className="bg-[#b76d79] text-white font-semibold px-8 py-4 rounded-full hover:bg-[#9a5864] transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
                 {c("hero_cta_primary_text")} <ChevronRight size={16} />
@@ -141,7 +141,7 @@ export default async function HomePage() {
               <h2 className="text-4xl md:text-5xl font-bold text-[#1c1917] mb-4" style={{ fontFamily: "var(--font-playfair)" }}>
                 {c("method_title")}
               </h2>
-              <p className="text-stone-600 max-w-xl mx-auto">{c("method_subtitle")}</p>
+              <p className="text-stone-600 max-w-xl mx-auto" dangerouslySetInnerHTML={{ __html: c("method_subtitle") }} />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {([1, 2, 3] as const).map((n) => {
@@ -158,7 +158,7 @@ export default async function HomePage() {
                       <h3 className="text-3xl font-bold text-[#1c1917] mb-3" style={{ fontFamily: "var(--font-playfair)" }}>
                         {c(`method_card_${n}_title`)}
                       </h3>
-                      <p className="text-stone-600 leading-relaxed text-sm">{c(`method_card_${n}_desc`)}</p>
+                      <p className="text-stone-600 leading-relaxed text-sm" dangerouslySetInnerHTML={{ __html: c(`method_card_${n}_desc`) }} />
                     </div>
                   </div>
                 );
