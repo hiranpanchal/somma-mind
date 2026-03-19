@@ -1,26 +1,90 @@
 @import "tailwindcss";
 
+@theme {
+  /* Brand Colors */
+  --color-cream: #e9d8b6;
+  --color-linen: #d6cec4;
+  --color-mauve: #c9a698;
+  --color-charcoal: #1c1917;
+  --color-rose-brand: #b76d79;
+  --color-rose-dark: #9a5864;
+  --color-olive: #85896c;
+  --color-olive-light: #eaebdf;
+
+  /* Background & Foreground */
+  --color-background: #e9d8b6;
+  --color-foreground: #1c1917;
+
+  /* Typography */
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-playfair);
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #e9d8b6;
+  --foreground: #1c1917;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter, system-ui, sans-serif);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Prose styles for course content */
+.prose-somma h1,
+.prose-somma h2,
+.prose-somma h3 {
+  font-family: var(--font-playfair, Georgia, serif);
+  color: #1c1917;
+}
+
+.prose-somma p {
+  line-height: 1.8;
+  color: #44403c;
+}
+
+.prose-somma blockquote {
+  border-left: 3px solid #b76d79;
+  padding-left: 1rem;
+  font-style: italic;
+  color: #57534e;
+}
+
+/* Tiptap editor styles */
+.tiptap-editor .ProseMirror {
+  min-height: 300px;
+  padding: 1rem;
+  outline: none;
+}
+
+.tiptap-editor .ProseMirror p {
+  margin-bottom: 0.75rem;
+}
+
+.tiptap-editor .ProseMirror h1 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.tiptap-editor .ProseMirror h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.tiptap-editor .ProseMirror blockquote {
+  border-left: 3px solid #b76d79;
+  padding-left: 1rem;
+  font-style: italic;
+  color: #57534e;
+}
+
+.tiptap-editor .ProseMirror img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  margin: 1rem 0;
 }
