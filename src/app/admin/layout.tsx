@@ -13,11 +13,14 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <aside className="w-64 bg-[#1c1917] text-white flex flex-col fixed inset-y-0 left-0 z-40">
         <div className="p-6 border-b border-white/10">
           <Link href="/" className="flex items-center gap-2">
+            <span className="text-xl font-light text-white" style={{ fontFamily: "var(--font-playfair)" }}>
+              the{" "}
+            </span>
             <span className="text-xl font-bold text-[#b76d79]" style={{ fontFamily: "var(--font-playfair)" }}>
-              Somma
+              Somaa
             </span>
             <span className="text-xl font-light text-white" style={{ fontFamily: "var(--font-playfair)" }}>
-              Mind
+              {" "}Mind
             </span>
           </Link>
           <p className="text-xs text-white/40 mt-1">Admin Panel</p>

@@ -41,8 +41,11 @@ export default function RegisterPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="inline-block">
+            <span className="text-3xl font-light text-[#1c1917]" style={{ fontFamily: "var(--font-playfair)" }}>
+              the{" "}
+            </span>
             <span className="text-3xl font-bold text-[#b76d79]" style={{ fontFamily: "var(--font-playfair)" }}>
-              Somma
+              Somaa
             </span>
             <span className="text-3xl font-light text-[#1c1917]" style={{ fontFamily: "var(--font-playfair)" }}>
               {" "}Mind

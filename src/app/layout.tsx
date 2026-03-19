@@ -18,7 +18,7 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Somma Mind — Heal. Transform. Thrive.",
+  title: "the Somaa Mind — Heal. Transform. Thrive.",
   description:
     "A unique blend of hypnotherapy, brainspotting, and somatic healing designed to help you release deep-seated patterns and create lasting transformation.",
   keywords: ["hypnotherapy", "brainspotting", "somatic healing", "transformation", "mindfulness"],

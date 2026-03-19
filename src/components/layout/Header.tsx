@@ -14,15 +14,15 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
-            <span
-              className="text-2xl font-bold text-violet-brand"
-              style={{ fontFamily: "var(--font-playfair)" }}
-            >
-              Somma
+          <Link href="/" className="flex items-center gap-1">
+            <span className="text-2xl font-light text-charcoal" style={{ fontFamily: "var(--font-playfair)" }}>
+              the{" "}
+            </span>
+            <span className="text-2xl font-bold text-violet-brand" style={{ fontFamily: "var(--font-playfair)" }}>
+              Somaa
             </span>
             <span className="text-2xl font-light text-charcoal" style={{ fontFamily: "var(--font-playfair)" }}>
-              Mind
+              {" "}Mind
             </span>
           </Link>
 

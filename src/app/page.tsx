@@ -102,7 +102,7 @@ export default async function HomePage() {
                 className="text-4xl md:text-5xl font-bold text-[#1c1917] mb-4"
                 style={{ fontFamily: "var(--font-playfair)" }}
               >
-                The Somma Method
+                The Somaa Method
               </h2>
               <p className="text-stone-600 max-w-xl mx-auto">
                 Three powerful healing modalities woven together into one transformative journey.
@@ -216,7 +216,7 @@ export default async function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {[
                 {
-                  quote: "I've tried therapy, journaling, and mindfulness apps — nothing worked like this. Somma Mind helped me access a part of myself I'd been running from for years.",
+                  quote: "I've tried therapy, journaling, and mindfulness apps — nothing worked like this. the Somaa Mind helped me access a part of myself I'd been running from for years.",
                   name: "Sarah M.",
                   role: "Wellness Practitioner",
                 },

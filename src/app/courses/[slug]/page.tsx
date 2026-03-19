@@ -56,7 +56,7 @@ export default async function CourseDetailPage({ params }: Props) {
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-start">
               <div className="lg:col-span-3">
                 <p className="text-xs font-semibold text-[#b76d79] uppercase tracking-widest mb-3">
-                  Somma Mind Training
+                  the Somaa Mind Training
                 </p>
                 <h1
                   className="text-3xl md:text-4xl font-bold text-[#1c1917] mb-4 leading-tight"

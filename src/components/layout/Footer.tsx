@@ -8,11 +8,11 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <div className="mb-4">
-              <span
-                className="text-2xl font-bold text-[#b76d79]"
-                style={{ fontFamily: "var(--font-playfair)" }}
-              >
-                Somma
+              <span className="text-2xl font-light text-white" style={{ fontFamily: "var(--font-playfair)" }}>
+                the{" "}
+              </span>
+              <span className="text-2xl font-bold text-[#b76d79]" style={{ fontFamily: "var(--font-playfair)" }}>
+                Somaa
               </span>
               <span className="text-2xl font-light text-white" style={{ fontFamily: "var(--font-playfair)" }}>
                 {" "}Mind
@@ -28,7 +28,7 @@ export default function Footer() {
             <h4 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Explore</h4>
             <ul className="space-y-2">
               <li><Link href="/courses" className="text-sm text-stone-400 hover:text-white transition-colors">All Courses</Link></li>
-              <li><Link href="/#about" className="text-sm text-stone-400 hover:text-white transition-colors">About Somma</Link></li>
+              <li><Link href="/#about" className="text-sm text-stone-400 hover:text-white transition-colors">About Us</Link></li>
               <li><Link href="/login" className="text-sm text-stone-400 hover:text-white transition-colors">Sign In</Link></li>
               <li><Link href="/register" className="text-sm text-stone-400 hover:text-white transition-colors">Get Started</Link></li>
             </ul>
@@ -48,7 +48,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-stone-700 mt-10 pt-6 text-center text-xs text-stone-500">
-          © {new Date().getFullYear()} Somma Mind. All rights reserved.
+          © {new Date().getFullYear()} the Somaa Mind. All rights reserved.
         </div>
       </div>
     </footer>
